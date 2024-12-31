@@ -12,12 +12,12 @@ public class HillClimbingSearch implements SearchAlgorithm {
     }
 
     public int[][] getNeighbors(int[][] state) {
-        int[][] neighbors = new int[state.length][4];
+        int[][] neighbors = new int[state.length * state[0].length * 4][4];
 
-        for (int i = 0, neighborIndex = 0; i < state.length; i++, neighborIndex++) {
+        for (int i = 0; i < state.length; i++) {
             for (int j = 0; j < state[i].length; j++) {
                 for(int color = 0; color < 4; color++) {
-                    neighbors[neighborIndex] = new int[] {i, j, color, neighborHChange(state, i, j, color)};
+                    neighbors[(i* state.length + j)*4 + color] = new int[] {i, j, color, neighborHChange(state, i, j, color)};
                 }
             }
         }
@@ -25,27 +25,14 @@ public class HillClimbingSearch implements SearchAlgorithm {
     }
 
     public int neighborHChange(int[][] state, int i, int j, int newColor) {
-        int nodeH = 0;
-        if (i < state.length - 1 && state[i][j] == state[i + 1][j])
-            nodeH++;
-        if(i > 0 && state[i][j] == state[i - 1][j])
-            nodeH++;
-        if(j < state.length - 1 && state[i][j] == state[i][j + 1])
-            nodeH++;
-        if (j > 0 && state[i][j] == state[i][j - 1])
-            nodeH++;
+        int[][] neighbor = SearchAlgorithm.deepCopy(state);
+        neighbor[i][j] = newColor;
+        int nodeH = currentBoxH(state, i, j);
+        int neighH = currentBoxH(neighbor, i, j);
 
-        int newNodeH = 0;
-        if (i < state.length - 1 && newColor == state[i + 1][j])
-            newNodeH++;
-        if(i > 0 && newColor == state[i - 1][j])
-            newNodeH++;
-        if(j < state.length - 1 && newColor == state[i][j + 1])
-            newNodeH++;
-        if (j > 0 && newColor == state[i][j - 1])
-            newNodeH++;
 
-        return newNodeH - nodeH;
+
+        return neighH - nodeH;
 
     }
 
@@ -83,8 +70,10 @@ public class HillClimbingSearch implements SearchAlgorithm {
             int[][] neighbors = getNeighbors(currentState);
 
             for(int i = 0; i < neighbors.length; i++) {
+                //System.out.println("index:" + i + ", i: " + neighbors[i][0] + ", j: " + neighbors[i][1] + ", c: " + neighbors[i][2] + ", h: " + neighbors[i][3]);
                 if(neighbors[i][3] < bestNeighborH) {
                     bestNeighbor = neighbors[i];
+                    bestNeighborH = neighbors[i][3];
                 }
             }
             currentState[bestNeighbor[0]][bestNeighbor[1]] = bestNeighbor[2];
