@@ -27,8 +27,9 @@ public class GeneticAlgorithm implements SearchAlgorithm {
         int totalH = 0;
 
         for (int[][] individual : selectedPopulation) {
-            cumulativeH[index++] = hFunc(individual);
-            totalH += cumulativeH[index-1];
+            totalH += hFunc(individual);
+            cumulativeH[index++] = totalH;
+
         }
 
         Random r = new Random();
