@@ -9,7 +9,7 @@ public class Main {
         Random rand = new Random();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                state[i][j] = rand.nextInt(4);
+                state[i][j] = rand.nextInt(0, 4);
             }
         }
         return state;
