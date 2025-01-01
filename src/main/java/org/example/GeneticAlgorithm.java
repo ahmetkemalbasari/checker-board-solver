@@ -8,6 +8,7 @@ public class GeneticAlgorithm implements SearchAlgorithm {
 
     private int row;
     private int col;
+    private int popSize;
     private List<int[][]> parents = new ArrayList<>();
     private List<int[][]> selectedPopulation = new ArrayList<>();
     private List<int[][]> generatedPopulation = new ArrayList<>();
@@ -15,6 +16,7 @@ public class GeneticAlgorithm implements SearchAlgorithm {
     public GeneticAlgorithm(int row, int col, int popSize) {
         this.row = row;
         this.col = col;
+        this.popSize = popSize;
         generateFirstPopulation(row, popSize);
     }
 
@@ -65,8 +67,9 @@ public class GeneticAlgorithm implements SearchAlgorithm {
 
     private int[][] crossover(int[][] parent0, int[][] parent1) {
         int[][] p = SearchAlgorithm.deepCopy(parent0);
-        for(int i = 2* row / 3; i < row; i++){
-            for(int j = 0; j < col; j++){
+        Random r = new Random();
+        for(int i = r.nextInt(row); i < row; i++){
+            for(int j = 0; j < r.nextInt(col); j++){
                 p[i][j] = parent1[i][j];
             }
         }
@@ -79,18 +82,7 @@ public class GeneticAlgorithm implements SearchAlgorithm {
         boolean found = false;
         int a = 0;
         while(true){
-
-            if(++a % 100000 == 0){
-                System.out.println(a + " H: " + hFunc(selectedPopulation.get(0)));
-                for(int i = 0; i < row; i++){
-                    for(int j = 0; j < col; j++){
-                        System.out.print(selectedPopulation.get(0)[i][j] + " ");
-                    }
-                    System.out.println();
-                }
-                System.out.println();
-                System.out.println();
-            }
+            a++;
 
             for (int i = 0; i < selectedPopulation.size(); i++) {
                 if(hFunc(selectedPopulation.get(i)) == 0)
@@ -98,12 +90,18 @@ public class GeneticAlgorithm implements SearchAlgorithm {
             }
 
             if(found){
-                System.out.println("I've found a solution");
+                System.out.println("I've found a solution in " + a + "th population");
+                for(int i = 0; i < row; i++){
+                    for(int j = 0; j < col; j++){
+                        System.out.print(selectedPopulation.get(0)[i][j] + " ");
+                    }
+                    System.out.println();
+                }
                 break;
             }
 
 
-            selectParents(10);
+            selectParents(popSize);
             generatedPopulation.clear();
 
             for(int i = 0; i < parents.size()/2; i+=2){
@@ -112,7 +110,14 @@ public class GeneticAlgorithm implements SearchAlgorithm {
             }
             mutateIndividuals();
 
-            selectedPopulation = generatedPopulation;
+            for(int i = 0; i < selectedPopulation.size(); i++){
+                int selectedH = hFunc(selectedPopulation.get(i));
+                for(int j = 0; j < generatedPopulation.size(); j++){
+                    if(hFunc(generatedPopulation.get(j)) <= selectedH){
+                        selectedPopulation.set(i, generatedPopulation.get(j));
+                    }
+                }
+            }
 
         }
 
@@ -134,11 +139,7 @@ public class GeneticAlgorithm implements SearchAlgorithm {
 
         if (i < state.length - 1 && state[i][j] == state[i + 1][j])
             h++;
-        if (i > 0 && state[i][j] == state[i - 1][j])
-            h++;
         if (j < state.length - 1 && state[i][j] == state[i][j + 1])
-            h++;
-        if (j > 0 && state[i][j] == state[i][j - 1])
             h++;
 
         return h;
