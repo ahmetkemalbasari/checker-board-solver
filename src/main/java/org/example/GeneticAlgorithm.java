@@ -20,7 +20,7 @@ public class GeneticAlgorithm implements SearchAlgorithm {
     }
 
     private void selectParents(int size) {
-        parents = new ArrayList<int[][]>();
+        parents.clear();
         int[] cumulativeH = new int[selectedPopulation.size()];
         int[] bestToWorst = new int[selectedPopulation.size()];
         int index = 0;
@@ -53,8 +53,14 @@ public class GeneticAlgorithm implements SearchAlgorithm {
         }
     }
 
-    private int[][] generateIndividual(int[][] parent) {
-        return parent;
+    private int[][] crossover(int[][] parent0, int[][] parent1) {
+        int[][] p = SearchAlgorithm.deepCopy(parent0);
+        for(int i = row/2; i < row; i++){
+            for(int j = 0; j < col; j++){
+                p[i][j] = parent1[i][j];
+            }
+        }
+        return p;
     }
 
 
