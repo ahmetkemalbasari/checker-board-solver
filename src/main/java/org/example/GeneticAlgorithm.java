@@ -67,6 +67,32 @@ public class GeneticAlgorithm implements SearchAlgorithm {
 
     @Override
     public void search() {
+        boolean found = false;
+        while(true){
+            for (int i = 0; i < selectedPopulation.size(); i++) {
+                if(hFunc(selectedPopulation.get(i)) == 0)
+                    found = true;
+            }
+
+            if(found){
+                System.out.println("I've found a solution");
+                break;
+            }
+
+
+            selectParents(10);
+            generatedPopulation.clear();
+
+            for(int i = 0; i < parents.size()/2; i+=2){
+                generatedPopulation.add(crossover(parents.get(i), parents.get(i + 1)));
+                generatedPopulation.add(crossover(parents.get(i+1), parents.get(i)));
+            }
+            mutateIndividuals();
+
+            selectedPopulation.clear();
+            selectedPopulation = generatedPopulation;
+
+        }
 
     }
 
