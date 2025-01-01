@@ -6,9 +6,12 @@ import java.util.Random;
 
 public class GeneticAlgorithm implements SearchAlgorithm {
 
+    private int row;
+    private int col;
     private List<int[][]> parents;
     private List<int[][]> selectedPopulation;
     private List<int[][]> generatedPopulation;
+
 
     private void generateFirstPopulation(int boardSize, int count) {
         while (count-- > 0) {
@@ -37,6 +40,16 @@ public class GeneticAlgorithm implements SearchAlgorithm {
                     break;
                 }
             }
+        }
+    }
+
+    private void mutateIndividuals(){
+        Random r = new Random();
+
+        for(int[][] individual : generatedPopulation){
+            int i = r.nextInt( row);
+            int j = r.nextInt( col);
+            individual[i][j] = r.nextInt(4);
         }
     }
 
