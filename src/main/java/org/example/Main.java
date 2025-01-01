@@ -43,7 +43,10 @@ public class Main {
                 {0, 1, 2, 3, 0, 1, 2, 3, 0, 1},
                 {1, 2, 3, 0, 1, 2, 3, 0, 1, 2},
         };*/
-        HillClimbingSearch hillClimbingSearch = new HillClimbingSearch(initialState);
-        hillClimbingSearch.search();
+        //HillClimbingSearch hillClimbingSearch = new HillClimbingSearch(initialState);
+        //hillClimbingSearch.search();
+
+        GeneticAlgorithm gA = new GeneticAlgorithm(10, 10, 10);
+        gA.search();
     }
 }

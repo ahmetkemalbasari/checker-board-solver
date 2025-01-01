@@ -8,9 +8,15 @@ public class GeneticAlgorithm implements SearchAlgorithm {
 
     private int row;
     private int col;
-    private List<int[][]> parents;
-    private List<int[][]> selectedPopulation;
-    private List<int[][]> generatedPopulation;
+    private List<int[][]> parents = new ArrayList<>();
+    private List<int[][]> selectedPopulation = new ArrayList<>();
+    private List<int[][]> generatedPopulation = new ArrayList<>();
+
+    public GeneticAlgorithm(int row, int col, int popSize) {
+        this.row = row;
+        this.col = col;
+        generateFirstPopulation(row, popSize);
+    }
 
 
     private void generateFirstPopulation(int boardSize, int count) {
@@ -21,25 +27,28 @@ public class GeneticAlgorithm implements SearchAlgorithm {
 
     private void selectParents(int size) {
         parents.clear();
-        int[] cumulativeH = new int[selectedPopulation.size()];
+        float[] cumulativeH = new float[selectedPopulation.size()];
         int[] bestToWorst = new int[selectedPopulation.size()];
         int index = 0;
-        int totalH = 0;
+        float upperLim = 0;
 
         for (int[][] individual : selectedPopulation) {
-            totalH += hFunc(individual);
-            cumulativeH[index++] = totalH;
+            float a = hFunc(individual);
+            upperLim += 1/a;
+            cumulativeH[index++] = upperLim;
 
         }
 
         Random r = new Random();
         for (int i = 0; i < selectedPopulation.size(); i++) {
-            int randomNumb = r.nextInt(0, totalH);
+            float randomNumb = r.nextFloat(0, upperLim);
             for(int j = 0; j < selectedPopulation.size(); j++){
                 if(randomNumb <= cumulativeH[j]){
-                    parents.add(selectedPopulation.get(i));
+                    parents.add(selectedPopulation.get(j));
+                    //System.out.println("a");
                     break;
                 }
+               // System.out.println("b");
             }
         }
     }
@@ -56,7 +65,7 @@ public class GeneticAlgorithm implements SearchAlgorithm {
 
     private int[][] crossover(int[][] parent0, int[][] parent1) {
         int[][] p = SearchAlgorithm.deepCopy(parent0);
-        for(int i = row/2; i < row; i++){
+        for(int i = 2* row / 3; i < row; i++){
             for(int j = 0; j < col; j++){
                 p[i][j] = parent1[i][j];
             }
@@ -68,7 +77,21 @@ public class GeneticAlgorithm implements SearchAlgorithm {
     @Override
     public void search() {
         boolean found = false;
+        int a = 0;
         while(true){
+
+            if(++a % 100000 == 0){
+                System.out.println(a + " H: " + hFunc(selectedPopulation.get(0)));
+                for(int i = 0; i < row; i++){
+                    for(int j = 0; j < col; j++){
+                        System.out.print(selectedPopulation.get(0)[i][j] + " ");
+                    }
+                    System.out.println();
+                }
+                System.out.println();
+                System.out.println();
+            }
+
             for (int i = 0; i < selectedPopulation.size(); i++) {
                 if(hFunc(selectedPopulation.get(i)) == 0)
                     found = true;
@@ -89,7 +112,6 @@ public class GeneticAlgorithm implements SearchAlgorithm {
             }
             mutateIndividuals();
 
-            selectedPopulation.clear();
             selectedPopulation = generatedPopulation;
 
         }
